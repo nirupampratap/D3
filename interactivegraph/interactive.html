@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>npurushothama3</title>
+        <script type="text/javascript" src="./lib/d3.v3.min.js"></script>
+        <script type="text/javascript" src="./interactive.js"></script>
+	<style type="text/css">
+			
+		.axis path,
+		.axis line {
+			fill: none;
+			stroke: none;
+			shape-rendering: crispEdges;
+		}
+		
+		.axis text {
+			font-family: sans-serif;
+			font-size: 13px;
+			font-weight: bold;
+		}
+
+		.axis .legaxis {
+			font-family: sans-serif;
+			font-size:11px;
+			font-weight:bold;
+		}
+
+		.smalline path,
+		.smalline line {
+			fill: none;
+			stroke: black;
+			shape-rendering: crispEdges;
+		}
+
+		.graphline path{
+			fill: none;
+			stroke: steelblue;
+			stroke-width: 2;
+		}
+
+		.title{
+			margin-left: 165px;
+			margin-top: 30px;
+			font-family: sans-serif;
+			font-size: 16px;
+			font-weight: bold;
+		}
+
+		.axislabel {
+			font-family: sans-serif;
+			font-size: 13px;
+			font-weight: bold;
+		}
+
+		.cellparent {
+			font-family: sans-serif;
+			font-size: 13px;
+			font-weight: bold;
+		}
+
+
+	</style>
+    </head>
+    <body>
+	<div id="graphtitle" class="title">
+		<text>Population of each city</text>
+	</div>
+	<div id="interactivemap">
+	</div>
+	<script type="text/javascript">
+		//set dimensions
+		var cHeight = 500, cWidth = 1200;
+
+		// Set the canvas
+		var svg = d3.select('#interactivemap')
+	          .append('svg')
+        	  .attr({'width':cWidth,'height':cHeight});
+
+		renderBarChart(svg);
+
+	</script>
+    </body>
+</html>  

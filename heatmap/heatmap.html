@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>npurushothama3</title>
+        <script type="text/javascript" src="../lib/d3.v3.min.js"></script>
+        <script type="text/javascript" src="./heatmap.js"></script>
+	<style type="text/css">
+			
+		.axis path,
+		.axis line {
+			fill: none;
+			stroke: none;
+			shape-rendering: crispEdges;
+		}
+		
+		.axis text {
+			font-family: sans-serif;
+			font-size: 12.5px;
+		}
+
+		.axis .legaxis {
+			font-family: sans-serif;
+			font-size:11px;
+			font-weight:bold;
+		}
+
+		.title{
+			margin-left: 165px;
+			font-family: sans-serif;
+			font-size: 16px;
+			font-weight: bold;
+		}
+
+		.axislabel {
+			font-family: sans-serif;
+			font-size: 13px;
+			font-weight: bold;
+		}
+
+		.selector {
+			margin-left: 110px;
+			margin-top: 20px;
+			font-family: sans-serif;
+			font-size: 15px;
+			font-weight: Bold;
+		}
+
+	</style>
+    </head>
+    <body>
+	<div id="graphtitle" class="title">
+		<text>Vizualizing Wizarding Houses and Spells</text>
+	</div>
+	<div id="options" class="selector">
+		<text>House: </text>
+	</div>
+	<div id="spellmap">
+	</div>
+	<script type="text/javascript">
+		//set dimensions
+		var cHeight = 500, cWidth = 700, cPadding = 30;
+
+		// Set the canvas
+		var svg = d3.select('#spellmap')
+	          .append('svg')
+        	  .attr({'width':cWidth,'height':cHeight});
+
+
+		// Set the scales
+		var shScale = d3.scale.ordinal()
+				.domain([1,7])
+				.range([1,7]);
+
+		// Setup the shapes
+		var square = d3.svg.symbol().type('square')
+					.size(function(d){ return shScale(d); });
+
+		var cross = d3.svg.symbol().type('cross')
+					.size(function(d){ return shScale(d); });
+
+		// Setup the color scale
+		var colorscale = d3.scale.linear()
+					.domain([0,1])
+					.range(["red","blue"]);
+
+		var dataset = [];
+
+		// Start plotting
+		d3.csv("./heatmap.csv", function(data) {
+			// Convert the data types for following items to numerical 
+			// imdb-rating, wins+noms, budget
+			data.forEach(function(d) {
+
+				d["Sorcerer\'s Stone"] = +d["Sorcerer\'s Stone"];
+				d["Chamber of Secrets"] = +d["Chamber of Secrets"];
+				d["Prisoner of Azkaban"] = +d["Prisoner of Azkaban"];
+				d["Goblet of Fire"] = +d["Goblet of Fire"];
+				d["Order of the Phoenix"] = +d["Order of the Phoenix"];
+				d["Half Blood Prince"] = +d["Half Blood Prince"];
+				d["Deathly Hallows"] = +d["Deathly Hallows"];
+				d.SpellType = d.SpellType;
+				d.House = d.House;
+
+				dataset.push(d);
+
+			});
+		
+			var graphTitle = ["Vizualizing Wizarding Houses and Spells"];
+			var axesNames = [["Spell Type","Book"]];
+
+			var filteredData = filter(dataset, "Gryffindor");
+
+			setGlobalData(dataset);
+			setOptions();
+			renderHeatMap(filteredData, svg);
+		});
+
+	</script>
+    </body>
+</html>  

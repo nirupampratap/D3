@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>npurushothama3</title>
+        <script type="text/javascript" src="d3/d3.v3.min.js"></script>
+	<style type="text/css">
+			
+		.axis path,
+		.axis line {
+			fill: none;
+			stroke: black;
+			shape-rendering: crispEdges;
+		}
+		
+		.axis text {
+			font-family: sans-serif;
+			font-size: 11px;
+		}
+
+	</style>
+    </head>
+    <body>
+	<h2>P. NIRUPAM PRATAP REDDY</h2>
+	<div id="wrapper">
+	</div>
+        <script type="text/javascript">
+
+		// Set dimensions
+		var height = 400, width = 400, padding = 30;
+
+		// Set the canvas
+		var svg = d3.select('#wrapper')
+				.append('svg')
+				.attr({'width':width + 100,'height':height + 100});
+
+		// Set the scales
+		var shScale = d3.scale.linear()
+				.domain([1,100])
+				.range([5,50]);
+
+		// Setup the shapes
+		var triangle = d3.svg.symbol().type('triangle-up')
+					.size(function(d){ return shScale(d[0]); });
+
+		var cross = d3.svg.symbol().type('cross')
+					.size(function(d){ return shScale(d[0]); });
+
+		// Setup the color scale
+		var colorscale = d3.scale.linear()
+					.domain([1,2])
+					.range(["green","blue"]);
+
+		var dataset = [];
+		var totalX = 0;
+		var totalN = 60;
+		// Data to plot
+		for(var i=0; i < totalN; i++)
+		{
+			var xVal = Math.round(Math.random() * 100);
+			var yVal = Math.round(Math.random() * 100);
+
+			totalX = totalX + xVal;
+
+			dataset.push([xVal, yVal]);
+		}
+
+		var avgX = totalX / totalN;
+		
+		//Create X axis
+		var xScale = d3.scale.linear()
+//				 .domain([0, d3.max(dataset, function(d) { return d[0]; })])
+				 .domain([0, 100])
+				 .range([padding, width - padding]);
+
+		var yScale = d3.scale.linear()
+//				 .domain([0, d3.max(dataset, function(d) { return d[1]; })])
+				 .domain([0, 100])
+				 .range([height - padding, padding]);	
+	
+		// Generate the X and Y axis in SVG
+		var xAxis = d3.svg.axis().scale(xScale).orient("bottom").ticks(5);
+		var yAxis = d3.svg.axis().scale(yScale).orient("left").ticks(5);
+
+		//Create X axis
+		svg.append("g")
+			.attr("class", "axis")
+			.attr("transform", "translate(0," + (height - padding) + ")")
+			.call(xAxis);
+			
+		//Create Y axis
+		svg.append("g")
+			.attr("class", "axis")
+			.attr("transform", "translate(" + padding + ",0)")
+			.call(yAxis);
+
+		//Create a group for all the items we create inside the graph
+		var group = svg.append("g")
+//				.attr("transform", "translate(" + padding + "," + (height - padding)+")");
+
+		var points = group.selectAll("path")
+				.data(dataset)
+				.enter()
+				.append("path")
+				.attr("d", function(d, i){ if(i % 2 == 0) return triangle(d); else return cross(d); })
+				.attr('fill',function(d){ if(d[0] <= avgX) return colorscale(1); else return colorscale(2); })
+				.attr('stroke','#000')
+				.attr('stroke-width',1)
+				.attr('transform',function(d){ return "translate("+xScale(d[0])+","+yScale(d[1])+")"; });	
+        </script>
+    </body>
+</html>  

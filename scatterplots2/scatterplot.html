@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>npurushothama3</title>
+        <script type="text/javascript" src="../lib/d3.v3.min.js"></script>
+        <script type="text/javascript" src="./scatterplot.js"></script>
+	<style type="text/css">
+			
+		.axis path,
+		.axis line {
+			fill: none;
+			stroke: black;
+			shape-rendering: crispEdges;
+		}
+		
+		.axis text {
+			font-family: sans-serif;
+			font-size: 13px;
+		}
+
+		.title{
+			font-family: sans-serif;
+			font-size: 16px;
+			font-weight: bold;
+		}
+
+		.ylabel {
+			font-family: sans-serif;
+			font-size: 13px;
+		}
+
+	</style>
+    </head>
+    <body>
+	<div id="wrapper">
+	</div>
+	<script type="text/javascript">
+	//set dimensions
+		var plotHeight = 400, plotWidth = 650;
+		var cHeight = plotHeight * 5.3, cWidth = plotWidth * 1.5, cPadding = 30;
+
+	// Set the canvas
+		var svg = d3.select('#wrapper')
+	          .append('svg')
+        	  .attr({'width':cWidth,'height':cHeight});
+
+
+		// Set the scales
+		var shScale = d3.scale.linear()
+				.domain([1,2])
+				.range([30,70]);
+
+		var shScale2 = d3.scale.linear()
+				.domain([0,300])
+				.range([20,150]);
+
+		// Setup the shapes
+		var circle = d3.svg.symbol().type('circle')
+					.size(function(d, i){ if(i==0) return shScale(d); else return shScale2(d); });
+
+		var cross = d3.svg.symbol().type('cross')
+					.size(function(d, i){ if(i==0) return shScale(d); else return shScale2(d); });
+
+		// Setup the color scale
+		var colorscale = d3.scale.linear()
+					.domain([0,1])
+					.range(["red","blue"]);
+
+		var dataset = [];
+		var totalN = 0;
+		var budgetMax = 0;
+		var winsMax = 0;
+		var lgWinsNomsMax = 0;
+		var sqrtWinsMax = 0;
+		var votesMax = 0;
+
+		// Start plotting
+		d3.csv("./movies.csv", function(data) {
+			// Convert the data types for following items to numerical 
+			// imdb-rating, wins+noms, budget
+			data.forEach(function(d) {
+				d.imdbRating = +d.imdbRating;
+				d.Runtime = +d.Runtime;
+				d.WinsNoms = +d.WinsNoms;
+				d.Budget = +d.Budget;
+				d.Gross = +d.Gross;
+				d.IsGoodRating = +d.IsGoodRating;
+				d.imdbVotes = +d.imdbVotes;
+				d.sqrtWinsNoms = Math.sqrt(+d.WinsNoms);
+				d.LogWinsNoms = Math.log(+d.WinsNoms);
+
+				dataset.push(d);
+
+				if(d.LogWinsNoms > lgWinsNomsMax) lgWinsNomsMax = d.LogWinsNoms;
+				if(d.sqrtWinsNoms > sqrtWinsMax) sqrtWinsMax = d.sqrtWinsNoms;
+				if(d.Budget > budgetMax) budgetMax = d.Budget;
+				if(d.WinsNoms > winsMax) winsMax = d.WinsNoms;
+				if(d.imdbVotes > votesMax) votesMax = d.imdbVotes;
+			});
+
+		var graphTitle = ["Wins + Nominations vs. IMDb Rating","Budgets vs. IMDb Rating", "Wins+Nominations (square-root-scaled) vs. IMDb Rating", "Wins+Nominations (log-scaled) vs. IMDb Rating", "IMDb Votes vs. IMDb Rating sized by (Wins + Nominations)"];
+		var axesNames = [["IMDb Rating","Wins + Nominations"], ["IMDb Rating","Budgets"], ["IMDb Rating","IMDb Votes"]];
+
+//function signature (dataset, yKey, yMax, pWidth, pHeight, cStartY, cPadding)
+
+			plotGraph(svg, dataset, "WinsNoms", winsMax, plotWidth, plotHeight, 0, cPadding, graphTitle[0], axesNames[0],0);
+			plotGraph(svg, dataset, "Budget", budgetMax, plotWidth, plotHeight, plotHeight + cPadding * 2.5, cPadding * 3, graphTitle[1], axesNames[1],0);
+			plotGraph(svg, dataset, "imdbVotes", votesMax, plotWidth, plotHeight, 2*plotHeight + cPadding * 2.5, cPadding * 2.5, graphTitle[4], axesNames[2], 1);
+			plotGraph(svg, dataset, "sqrtWinsNoms", sqrtWinsMax, plotWidth, plotHeight, 3 * plotHeight + cPadding * 2.5, cPadding * 2.5, graphTitle[2], axesNames[0],0);
+			plotGraph(svg, dataset, "LogWinsNoms", lgWinsNomsMax, plotWidth, plotHeight, 4*plotHeight + cPadding * 3, cPadding, graphTitle[3], axesNames[0],0);
+		});
+	</script>
+    </body>
+</html>  
